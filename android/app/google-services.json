@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "994616054065",
+    "project_id": "coffeetht-e7f05",
+    "storage_bucket": "coffeetht-e7f05.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:994616054065:android:be9a63d3c65598dc59a010",
+        "android_client_info": {
+          "package_name": "com.coffeetht"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA-EXbfpIoiaPpfdSXJ3rwnASymXqudwoA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
