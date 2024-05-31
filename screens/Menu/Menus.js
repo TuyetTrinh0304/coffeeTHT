@@ -138,26 +138,15 @@ const Menus = ({ navigation }) => {
             />
             <View style={styles.categoriesContainer}>
                 <TouchableOpacity 
-                    onPress={() => filterMenusByCategory("Tráng miệng")} 
+                    onPress={() => filterMenusByCategory("Đồ ăn vặt")} 
                     style={[
                         styles.categoryButton, 
-                        selectedCategory === "Tráng miệng" && styles.selectedCategoryButton,
+                        selectedCategory === "Đồ ăn vặt" && styles.selectedCategoryButton,
                         { width: '33%', flexDirection: "row" }
                     ]}
                 >
                     <Image source={require("../assets/icecreamcup.png")} style={{height: 20, width: 20}}/>
-                    <Text style={styles.categoryButtonText}>Tráng miệng</Text>
-                </TouchableOpacity>
-                <TouchableOpacity 
-                    onPress={() => filterMenusByCategory("Món chính")} 
-                    style={[
-                        styles.categoryButton, 
-                        selectedCategory === "Món chính" && styles.selectedCategoryButton,
-                        { width: '30%', flexDirection: "row" }
-                    ]}
-                >
-                    <Image source={require("../assets/tray.png")} style={{height: 20, width: 20}}/>
-                    <Text style={styles.categoryButtonText}>Món chính</Text>
+                    <Text style={styles.categoryButtonText}>Đồ ăn vặt</Text>
                 </TouchableOpacity>
                 <TouchableOpacity 
                     onPress={() => filterMenusByCategory("Đồ uống")} 
