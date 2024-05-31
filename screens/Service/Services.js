@@ -32,8 +32,7 @@ const Services = ({ navigation }) => {
 
     const renderItem = ({ item }) => (
         <TouchableOpacity 
-            style={styles.itemContainer} 
-            onPress={() => handleDetail(item)}
+            style={styles.itemContainer}
         >
             <Menu>
                 <MenuTrigger>
@@ -53,6 +52,7 @@ const Services = ({ navigation }) => {
                 )}
                 <Text style={styles.itemTitle}>{item.title}</Text>
                 <Text style={styles.itemPrice}>{parseFloat(item.price).toLocaleString()} ₫</Text>
+                <Text>{item.category}</Text>
                 <Text style={[styles.itemState, { color: item.state === "Đã đặt" ? "red" : "black" }]}>{item.state}</Text>
                 </View>
                 </MenuTrigger>

@@ -54,6 +54,7 @@ const Customer = () => {
         name="ProfileCustomer"
         component={ProfileCustomer}
         options={{
+          title: "Profile",
           tabBarIcon: ({ color }) => (
             <Image
               source={require("../assets/customer.png")}
@@ -78,4 +79,4 @@ const Customer = () => {
   );
 };
 
-export default Customer;
+export default Customer

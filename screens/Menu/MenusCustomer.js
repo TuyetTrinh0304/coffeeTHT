@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Image, View, FlatList, TouchableOpacity, Alert, StyleSheet, Modal, TouchableHighlight } from "react-native";
-import { IconButton, Text, TextInput } from "react-native-paper";
+import { Text, TextInput } from "react-native-paper";
 import firestore from '@react-native-firebase/firestore';
 import { Menu, MenuTrigger, MenuOptions, MenuOption } from 'react-native-popup-menu';
+import { useMyContextProvider } from "../..";
 
 const MenusCustomer = ({ navigation }) => {
     const [initialMenus, setInitialMenus] = useState([]);
@@ -11,6 +12,7 @@ const MenusCustomer = ({ navigation }) => {
     const [appointments, setAppointments] = useState([]);
     const [selectedMenu, setSelectedMenu] = useState(null);
     const [modalVisible, setModalVisible] = useState(false);
+    const [selectedCategory, setSelectedCategory] = useState(null);
 
     useEffect(() => {
         const unsubscribeMenus = firestore()
@@ -31,28 +33,32 @@ const MenusCustomer = ({ navigation }) => {
         return () => unsubscribeMenus();
     }, []);
 
+    const [controller, dispatch] = useMyContextProvider();
+    const { userLogin } = controller;
+
     useEffect(() => {
-        const unsubscribeAppointments = firestore()
-            .collection('Appointments')
-            .onSnapshot(querySnapshot => {
-                const appointments = [];
-                querySnapshot.forEach(documentSnapshot => {
-                    appointments.push({
-                        ...documentSnapshot.data(),
-                        id: documentSnapshot.id,
+        if (userLogin?.email) {
+            const unsubscribe = firestore()
+                .collection('Appointments')
+                .where('orderBy', '==', userLogin.email)
+                .onSnapshot(querySnapshot => {
+                    const appointmentsData = [];
+                    querySnapshot.forEach(documentSnapshot => {
+                        appointmentsData.push({
+                            ...documentSnapshot.data(),
+                            id: documentSnapshot.id,
+                        });
                     });
+                    setAppointments(appointmentsData);
                 });
 
-                setAppointments(appointments);
-            });
-
-        return () => unsubscribeAppointments();
-    }, []);
+            return () => unsubscribe();
+        }
+    }, [userLogin]);
 
     const renderItem = ({ item }) => (
         <TouchableOpacity 
-            style={styles.itemContainer} 
-            onPress={() => handleDetail(item)}
+            style={styles.itemContainer}
         >
             <Menu>
                 <MenuTrigger>
@@ -113,10 +119,18 @@ const MenusCustomer = ({ navigation }) => {
             console.error("Lỗi khi thêm món ăn vào bàn:", error);
         }
     }
+
     const filterMenusByCategory = (category) => {
-        const filteredMenus = initialMenus.filter(menu => menu.category === category);
-        setMenus(filteredMenus);
+        if (selectedCategory === category) {
+            setMenus(initialMenus);
+            setSelectedCategory(null);
+        } else {
+            const filteredMenus = initialMenus.filter(menu => menu.category === category);
+            setMenus(filteredMenus);
+            setSelectedCategory(category);
+        }
     };
+
     return (
         <View style={{ flex: 1 }}>
             <Image source={require("../assets/logo.png")}
@@ -133,18 +147,43 @@ const MenusCustomer = ({ navigation }) => {
                 style={styles.searchInput}
             />
             <View style={styles.categoriesContainer}>
-                <TouchableOpacity onPress={() => filterMenusByCategory("Đồ ăn vặt")} style={[styles.categoryButton, { width: '33%', flexDirection: "row" }]}>
+                <TouchableOpacity 
+                    onPress={() => filterMenusByCategory("Tráng miệng")} 
+                    style={[
+                        styles.categoryButton, 
+                        selectedCategory === "Tráng miệng" && styles.selectedCategoryButton,
+                        { width: '33%', flexDirection: "row" }
+                    ]}
+                >
                     <Image source={require("../assets/icecreamcup.png")} style={{height: 20, width: 20}}/>
-                    <Text style={styles.categoryButtonText}>Đồ ăn vặt</Text>
+                    <Text style={styles.categoryButtonText}>Tráng miệng</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => filterMenusByCategory("Đồ uống")} style={[styles.categoryButton, { width: '30%', flexDirection: "row"  }]}>
+                <TouchableOpacity 
+                    onPress={() => filterMenusByCategory("Món chính")} 
+                    style={[
+                        styles.categoryButton, 
+                        selectedCategory === "Món chính" && styles.selectedCategoryButton,
+                        { width: '30%', flexDirection: "row" }
+                    ]}
+                >
+                    <Image source={require("../assets/tray.png")} style={{height: 20, width: 20}}/>
+                    <Text style={styles.categoryButtonText}>Món chính</Text>
+                </TouchableOpacity>
+                <TouchableOpacity 
+                    onPress={() => filterMenusByCategory("Đồ uống")} 
+                    style={[
+                        styles.categoryButton, 
+                        selectedCategory === "Đồ uống" && styles.selectedCategoryButton,
+                        { width: '30%', flexDirection: "row" }
+                    ]}
+                >
                     <Image source={require("../assets/soda.png")} style={{height: 20, width: 20}}/>
-                    <Text style={styles.categoryButtonText}> Đồ uống</Text>
+                    <Text style={styles.categoryButtonText}>Đồ uống</Text>
                 </TouchableOpacity>
             </View>
             <View style={styles.header}>
                 <Text style={styles.headerText}>
-                    Menu
+                    Danh sách menu
                 </Text>
             </View>
             <FlatList
@@ -271,7 +310,7 @@ const styles = StyleSheet.create({
         elevation: 2
     },
     textStyle: {
-        color: "white",
+        color: "black",
         fontWeight: "bold",
         textAlign: "center"
     },
@@ -311,11 +350,14 @@ const styles = StyleSheet.create({
         paddingVertical: 8,
         borderRadius: 10,
     },
+    selectedCategoryButton: {
+        backgroundColor: '#aaa',
+    },
     categoryButtonText: {
         fontSize: 16,
         fontWeight: 'bold',
         textAlign: 'center'
     },
-});
+})
 
 export default MenusCustomer;
